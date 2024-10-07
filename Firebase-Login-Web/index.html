@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <label>Username</label>
+    <input type="text" id="usernameInp">
+    <br><br>
+
+    <label>Password</label>
+    <input type="password" id="passwordInp">
+    <br><br>
+
+    <label>Department</label>
+    <select id="departmentInp">
+        <option value="SoftwareEngineer">Software Engineer</option>
+        <option value="3DArtist">3D Artist</option>
+        <option value="DataScientist">Data Scientist</option>
+    </select>
+    <br><br>
+
+    <button id="addBttn">Add</button>
+    <button id="retrieveBttn">Retrieve</button>
+    <button id="updateBttn">Update</button>
+    <button id="deleteBttn">Delete</button>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyApZhXJA516mxHJLJcVpRDgEDFSLnjappA",
+            authDomain: "login-project-e37a3.firebaseapp.com",
+            databaseURL: "https://login-project-e37a3-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "login-project-e37a3",
+            storageBucket: "login-project-e37a3.appspot.com",
+            messagingSenderId: "259990167695",
+            appId: "1:259990167695:web:e99347dcfbe380d08d10fa"
+        };
+
+        const app = initializeApp(firebaseConfig);
+
+        import {getDatabase, ref, child, get, set, update, remove} from "https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js";
+     
+        const db = getDatabase();
+
+        let usernameInp = document.getElementById('usernameInp');
+        let passwordInp = document.getElementById('passwordInp');
+
+        let departmentInp = document.getElementById('departmentInp');
+
+        let addBttn = document.getElementById('addBttn');
+        let retrieveBttn = document.getElementById('retrieveBttn');
+        let updateBttn = document.getElementById('updateBttn');
+        let deleteBttn = document.getElementById('deleteBttn');
+
+        function AddData(){
+            set(ref(db,'EmployeeSet/' + usernameInp.value), {
+                user: {username: usernameInp.value, password: Number(passwordInp.value)},
+                department: departmentInp.value,
+            }).then(()=>{
+                alert("Data added successfuly");
+            }).catch((error)=>{
+                alert("Unsuccessful");
+                console.log(error);
+            })
+        }
+
+        function RetData(){
+            const dbRef = ref(db);
+
+            get(child(dbRef, 'EmployeeSet/' + usernameInp.value)).then((snapshot)=>{
+                    if(snapshot.exists()){
+                        usernameInp.value = snapshot.val().user.username;
+                        passwordInp.value = snapshot.val().user.password;
+                        departmentInp.value = snapshot.val().department;
+                         
+                    }
+
+                    else{
+                        alert("Employee doesn't exist");
+                    }
+                })
+                .catch((error)=>{
+                    alert("Unsuccessful");
+                    console.log(error);
+                })
+        }
+
+        function UpdateData(){
+            update(ref(db,'EmployeeSet/' + usernameInp.value), {
+                //user: {username: usernameInp.value, password: Number(passwordInp.value)},
+                department: departmentInp.value
+            }).then(()=>{
+                alert("Data updated successfuly");
+            }).catch((error)=>{
+                alert("Unsuccessful");
+                console.log(error);
+            })
+        }
+
+        function DeleteData(){
+            remove(ref(db,'EmployeeSet/' + usernameInp.value)).then(()=>{
+                alert("Data deleted successfuly");
+            }).catch((error)=>{
+                alert("Unsuccessful");
+                console.log(error);
+            })
+        }
+
+        addBttn.addEventListener('click', AddData);
+        retrieveBttn.addEventListener('click', RetData);
+        updateBttn.addEventListener('click', UpdateData);
+        deleteBttn.addEventListener('click', DeleteData);
+     </script>
+</body>
+</html>
